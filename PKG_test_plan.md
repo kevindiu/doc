@@ -11,17 +11,19 @@ The function accept [insert request object](https://github.com/vdaas/vald/blob/m
 
 To create boundary values, we need to thing about
 
-- empty value
+- empty value (for slice)
 - 0 value
 - nil value
-- min value
-- max value
+- min value of the variable type (if any)
+- max value of the variable type (if any)
+- Unexcepted/undefined value (e.g. NaN offloating point number)
 
 ### test cases
 
 - Equivalence Class Testing
-  - case 1: Insert vector success
-  - case 2: Insert vector with different dimension fail
+  - case 1: Insert int vector success
+  - case 2: Insert float vector success
+  - case 3: Insert vector with different dimension fail
 
 - Boundary Value Testing
   - case 1: Insert vector with 0 value success (0 value vector)
