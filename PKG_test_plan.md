@@ -1,49 +1,8 @@
 # PKG Test design
 
-- Goal
-  - ensure the functionality works correctly
-  - increase test coverage of pkg package
-  - refactor implementation code
-
-- What to test
-  - Priority: Agent -> LB -> Discoverer -> Index manager -> Sidecar -> Filter
-  - For now implement pkg/handler only
-    - pkg/service will work after it
-
-- How to proceed
-  1. test case design share
-  2. implementation (refactor impl. if needed)
-  3. Check test coverage to avoid missing branchs
-  4. code review
-
-# Test methodlogy
-
-- White box testing
-  - Statement Coverage
-    - all the executable statements in the source code are executed at least once
-  - Decision Coverage
-    - checking and ensuring that each branch (true / false) of every possible decision point is executed at least once
-  - Branch Coverage
-    - each decision condition from every branch is executed at least once
-  - Condition Coverage
-    - check individual outcomes for each logical condition
-
-- Black box testing
-  - Equivalence Class Testing
-    - divide the test data into the group and then has a representative for each group (https://www.quora.com/What-is-a-real-life-example-for-equivalence-class-testing?share=1)
-  - Boundary Value Testing
-    - Boundary value testing is focused on the values at boundaries. This technique determines whether a certain range of values are acceptable by the system or not. 
-  - Decision Table Testing
-    - A decision table puts causes and their effects in a matrix. There is a unique combination in each column.
-
-- Use mock for external dependencies (3rd party dependencies)
-  - why: to separate the testing target, reduce dependencies
-  - we may need to refactor the implementation to use mock when needed
-  - no mock for internal dependencies (may have exception)
-
 # Test cases
 
-To apply white box & black box testing methodlogies above, the key point is:
+To apply grey box testing methodlogies, the key point is:
 
 - cover valid and invalid case
 - try to cover most of the conditions (if-else statement)
@@ -60,11 +19,24 @@ We take agent/handler insert function as example. [Code](https://github.com/vdaa
 
 The function accept `ctx context.Context` and `req *payload.Insert_Request`, which contains the insert vector and configuration.
 
-In this case, the mind is to testing different input vector with different settings, which testing the boundary values.
+In this case, the mind is to test different input vectors with different settings, and test the boundary values.
 
-For example we should include the cases that the insert vector is a normal value, empty, 0 value, max value, duplicated and etc.
+For example we should include the cases that the insert vector is: 
+
+- normal value
+- empty vector
+- 0 value vector
+- max value vector
+- duplicated vector
 
 For different settings, it contains the SkipStrictExistCheck config, which we should test the cases with this flag on/off.
+
+- SkipStrictExistCheck on with duplicated vector
+- SkipStrictExistCheck off with duplicated vector
+- SkipStrictExistCheck on with non-duplicated vector
+- SkipStrictExistCheck off with non-duplicated vector
+
+We can see the source code and to cover white box cases like below comments in the source code.
 
 ```go
 func (s *server) Insert(ctx context.Context, req *payload.Insert_Request) (res *payload.Object_Location, err error) {
@@ -118,6 +90,8 @@ func (s *server) Insert(ctx context.Context, req *payload.Insert_Request) (res *
 }
 ```
 
+Example test case:
+
 - Black box testing
   - Equivalence Class Testing
     - case 1: Insert vector success
@@ -140,23 +114,3 @@ Since there are no 3rd party dependencies, no mock will be applied.
 ### Validate output
 
 Since the function return Object_Location and error, we will validate if the returned location and error is excepted.
-
-## Example 2
-
-StreamInsert [Code](https://github.com/vdaas/vald/blob/master/pkg/agent/core/ngt/handler/grpc/handler.go#L1175)
-
-Since logic is hidden in BidirectionalStream call, we may need to refactor to separate the logic from line 184 to other function to test this function.
-https://github.com/vdaas/vald/blob/master/pkg/agent/core/ngt/handler/grpc/handler.go#L1184
-
-This function accept the `Insert_StreamInsertServer` to create the BidirectionalStream. 
-
-The implementation of `Insert_StreamInsertServer` is generated. We can mock the insert server to simplify the test.
-
-The test cases are similar with `insert` function, except we need to handle multiple insert cases:
-
-- Insert multiple vectors success
-- Insert multiple vectors with same UUID
-- Insert multiple vectors success but one failed
-  - we need to check if all vectors sucessfully inserted are inserted
-
-The function return error so we only need to validate the return value is excepted.
