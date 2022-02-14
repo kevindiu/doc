@@ -114,3 +114,7 @@ Since there are no 3rd party dependencies, no mock will be applied.
 ### Validate output
 
 Since the function return Object_Location and error, we will validate if the returned location and error is excepted.
+
+After implement all the test, please check the code coverage to see if there is any missing branch cases and please add cases to cover it if we can.
+
+Last, create PR and write the design on the PR description to let other knows how and what did you implemented on unit test.
