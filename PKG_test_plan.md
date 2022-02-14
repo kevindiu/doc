@@ -92,22 +92,19 @@ func (s *server) Insert(ctx context.Context, req *payload.Insert_Request) (res *
 
 Example test case:
 
-- Black box testing
-  - Equivalence Class Testing
-    - case 1: Insert vector success
-  - Boundary Value Testing
-    - case 1: Insert vector with 0 value success
-    - case 2: Insert vector with max value success
-    - case 3: Insert with empty UUID fail
-    - case 4: Insert empty vector fail (0 length vector)
-  
-- White box testing
-  - Branch Coverage
-    - case 1: Insert vector with different dimension fail
-    - case 2: Insert duplicated vector success when SkipStrictExistCheck is off
-    - case 3: Insert duplicated vector fail when SkipStrictExistCheck is on
-    - case 4: InsertWithTime return other error
-    - case 5: Trace span is not nil
+- Equivalence Class Testing
+  - case 1: Insert vector success
+- Boundary Value Testing
+  - case 1: Insert vector with 0 value success
+  - case 2: Insert vector with max value success
+  - case 3: Insert with empty UUID fail
+  - case 4: Insert empty vector fail (0 length vector)
+- Branch Coverage
+  - case 1: Insert vector with different dimension fail
+  - case 2: Insert duplicated vector success when SkipStrictExistCheck is off
+  - case 3: Insert duplicated vector fail when SkipStrictExistCheck is on
+  - case 4: InsertWithTime return other error
+  - case 5: Trace span is not nil
 
 Since there are no 3rd party dependencies, no mock will be applied.
 
